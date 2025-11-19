@@ -1,10 +1,20 @@
 import { ReactNode } from 'react';
-import { Home, BarChart3, Sparkles, TrendingUp, Settings as SettingsIcon } from 'lucide-react';
+import { Home, BarChart3, Sparkles, TrendingUp, Settings as SettingsIcon, LogOut, User } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CostSettings } from '@/components/Dashboard/CostSettings';
 import { CostSettings as CostSettingsType } from '@/types/smarthome';
+import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -16,6 +26,12 @@ export const AppLayout = ({ children, costSettings, onCostUpdate }: AppLayoutPro
   const location = useLocation();
   const navigate = useNavigate();
   const currentPath = location.pathname;
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/auth');
+  };
 
   const tabs = [
     { path: '/', label: 'Dashboard', icon: Home },
@@ -39,7 +55,29 @@ export const AppLayout = ({ children, costSettings, onCostUpdate }: AppLayoutPro
                 <p className="text-sm text-muted-foreground">Energy Management Dashboard</p>
               </div>
             </div>
-            <CostSettings settings={costSettings} onUpdate={onCostUpdate} />
+            <div className="flex items-center gap-3">
+              <CostSettings settings={costSettings} onUpdate={onCostUpdate} />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon" className="rounded-full">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col">
+                      <span className="font-semibold">{user?.username}</span>
+                      <span className="text-xs text-muted-foreground">{user?.email}</span>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
 
           {/* Navigation Tabs */}
