@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Power, Edit2, Clock, Calendar } from 'lucide-react';
+import { Power, Edit2, Clock, Calendar, Trash2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,7 @@ interface DeviceCardProps {
   onNameChange: (id: number, name: string) => void;
   onSchedule: (id: number, time: string, action: 'on' | 'off') => void;
   onTimer: (id: number, minutes: number, action: 'on' | 'off') => void;
+  onRemove: (id: number) => void;
 }
 
 export const DeviceCard = ({
@@ -31,6 +32,7 @@ export const DeviceCard = ({
   onNameChange,
   onSchedule,
   onTimer,
+  onRemove,
 }: DeviceCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(device.name);
@@ -71,8 +73,18 @@ export const DeviceCard = ({
                 <Edit2 className="h-3 w-3" />
               </Button>
             </div>
-          )}
-        </div>
+        )}
+      </div>
+
+      <Button
+        variant="ghost"
+        size="sm"
+        className="w-full mt-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+        onClick={() => onRemove(device.id)}
+      >
+        <Trash2 className="h-4 w-4 mr-2" />
+        Remove Device
+      </Button>
         <Switch
           checked={device.isOn}
           onCheckedChange={() => onToggle(device.id)}
