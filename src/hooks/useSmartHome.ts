@@ -106,6 +106,39 @@ export const useSmartHome = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const addDevice = useCallback((name: string, type: string) => {
+    setDevices((prev) => {
+      const newDevice: Device = {
+        id: prev.length > 0 ? Math.max(...prev.map(d => d.id)) + 1 : 1,
+        name,
+        isOn: false,
+        currentPower: 0,
+        currentAmp: 0,
+        todayUsage: 0,
+        todayCost: 0,
+      };
+      const updated = [...prev, newDevice];
+      storage.saveDevices(updated);
+      toast({
+        title: 'Device added',
+        description: `${name} has been added to your dashboard`,
+      });
+      return updated;
+    });
+  }, []);
+
+  const removeDevice = useCallback((deviceId: number) => {
+    setDevices((prev) => {
+      const updated = prev.filter((d) => d.id !== deviceId);
+      storage.saveDevices(updated);
+      toast({
+        title: 'Device removed',
+        description: 'Device has been removed from your dashboard',
+      });
+      return updated;
+    });
+  }, []);
+
   const toggleDevice = useCallback(async (deviceId: number) => {
     setDevices((prev) =>
       prev.map((device) => {
@@ -179,6 +212,8 @@ export const useSmartHome = () => {
     energyData,
     costSettings,
     dailySummary,
+    addDevice,
+    removeDevice,
     toggleDevice,
     updateDeviceName,
     setDeviceSchedule,
